@@ -100,14 +100,16 @@ Make sure you have [Node.js](https://nodejs.org/) and [Git](https://git-scm.com/
 ### 2. Clone the Repository
 ```bash
 git clone [https://github.com/AdityaInTech/EcoKarma.git](https://github.com/AdityaInTech/EcoKarma.git)
-cd EcoKarma```
+cd EcoKarma
+```
 
 ### 3. Backend Setup
 Open a terminal and navigate to the backend folder:
 
 ```bash
 cd backend
-npm install```
+npm install
+```
 
 Create a `.env` file inside the `backend` folder and add the following variables:
 
@@ -140,7 +142,7 @@ npm run dev
 Your app should now be running locally at http://localhost:5173!
 
 ## Author
-Built by Aditya Parmale
+Built by **Aditya Parmale**
 
 
 Save that in VS Code, and the formatting should be absolutely perfect. Would you like to review how
