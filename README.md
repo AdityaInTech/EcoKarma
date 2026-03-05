@@ -100,14 +100,14 @@ Make sure you have [Node.js](https://nodejs.org/) and [Git](https://git-scm.com/
 ### 2. Clone the Repository
 ```bash
 git clone [https://github.com/AdityaInTech/EcoKarma.git](https://github.com/AdityaInTech/EcoKarma.git)
-cd EcoKarma
+cd EcoKarma```
 
 ### 3. Backend Setup
 Open a terminal and navigate to the backend folder:
 
 ```bash
 cd backend
-npm install
+npm install```
 
 Create a `.env` file inside the `backend` folder and add the following variables:
 
@@ -115,7 +115,7 @@ Create a `.env` file inside the `backend` folder and add the following variables
 PORT=5000
 MONGO_URI=your_mongodb_connection_string
 JWT_SECRET=your_super_secret_jwt_key
-
+```
 Start the backend server:
 
 Bash
