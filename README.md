@@ -122,7 +122,6 @@ Start the backend server:
 
 Bash
 npm run dev
-# or: node server.js
 
 ### 4. Frontend Setup
 Open a new separate terminal window and navigate to the frontend folder:
