@@ -88,6 +88,7 @@ EcoKarma/
 │   └── package.json             # Frontend dependencies
 │
 └── .gitignore                   # Global git ignore rules (node_modules, .env, etc.)
+```
 
 ## 🛠️ Local Development Setup
 
