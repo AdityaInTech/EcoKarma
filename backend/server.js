@@ -19,7 +19,7 @@ const app = express();
 
 
 app.use(cors({
-    origin: ['http://localhost:5173', 'https://eco-karma.vercel.app'], // Replace with your real Vercel link!
+    origin: ["http://localhost:5173", "https://eco-karma.vercel.app"],
     credentials: true
 }));
 
