@@ -13,7 +13,20 @@ dotenv.config();
 
 const app = express();
 
-app.use(cors());
+// app.use(cors());
+
+
+
+
+app.use(cors({
+    origin: ['http://localhost:5173', 'https://your-actual-vercel-url.vercel.app'], // Replace with your real Vercel link!
+    credentials: true
+}));
+
+
+
+
+
 app.use(express.json());
 
 // Connect to MongoDB Database
