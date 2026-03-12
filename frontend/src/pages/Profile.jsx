@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  User, MapPin, Zap, Award, LogOut, Camera, CheckCircle2, Clock, Shield, Target
+  User, MapPin, Zap, Award, LogOut, Camera, CheckCircle2, Clock, Shield, Target, Menu
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../api/axios';
 
 const Profile = () => {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [userData, setUserData] = useState(null);
   const [userPosts, setUserPosts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -80,34 +81,56 @@ const Profile = () => {
     <div className="h-screen flex flex-col bg-slate-50 overflow-hidden">
       
       {/* --- TOP NAVBAR --- */}
-      <nav className="h-16 bg-white border-b border-slate-100 shrink-0 px-10 flex items-center justify-between shadow-sm z-50">
-        <Link to="/" className="text-2xl font-black tracking-tighter italic text-[#ff4500]">EcoKarma.</Link>
-        <div className="flex items-center gap-12">
-          <div className="hidden lg:flex items-center gap-10 font-dashboard-caps">
-            <Link to="/" className="hover:text-slate-900 transition-colors">Home</Link>
-            <Link to="/action-hub" className="hover:text-slate-900 transition-colors">ActionHub</Link>
-            <Link to="/sos" className="hover:text-slate-900 transition-colors">Community SOS</Link>
-            <Link to="/perks" className="hover:text-slate-900 transition-colors">Perks</Link>
-            <Link to="/about" className="hover:text-slate-900 transition-colors">About Us</Link>
-          </div>
-          <div className="flex items-center gap-6 border-l border-slate-100 pl-8">
-            
-            {/* Moved Sign Out Button Here */}
-            <button 
-              onClick={handleSignOut}
-              className="flex items-center gap-2 text-xs font-bold text-slate-400 hover:text-red-500 transition-colors"
-            >
-              <LogOut size={16} /> <span className="hidden sm:block">Sign Out</span>
-            </button>
+<nav className="h-16 bg-white border-b border-slate-100 shrink-0 px-6 lg:px-10 flex items-center justify-between shadow-sm z-50 relative">
+  <Link to="/" className="text-2xl font-black tracking-tighter italic text-[#ff4500]">EcoKarma.</Link>
+  
+  {/* --- DESKTOP VIEW (Hidden on Mobile) --- */}
+  <div className="hidden lg:flex items-center gap-12">
+    <div className="flex items-center gap-10 font-dashboard-caps">
+      <Link to="/" className="hover:text-slate-900 transition-colors">Home</Link>
+      <Link to="/action-hub" className="hover:text-slate-900 transition-colors">ActionHub</Link>
+      <Link to="/sos" className="hover:text-slate-900 transition-colors">Community SOS</Link>
+      <Link to="/perks" className="hover:text-slate-900 transition-colors">Perks</Link>
+      <Link to="/about" className="hover:text-slate-900 transition-colors">About Us</Link>
+    </div>
+    <div className="flex items-center gap-6 border-l border-slate-100 pl-8">
+      {/* Moved Sign Out Button Here */}
+      <button 
+        onClick={handleSignOut}
+        className="flex items-center gap-2 text-xs font-bold text-slate-400 hover:text-red-500 transition-colors"
+      >
+        <LogOut size={16} /> <span className="hidden sm:block">Sign Out</span>
+      </button>
 
-            {/* Dynamic Initial Avatar in Navbar */}
-            <div className="w-10 h-10 bg-[#ff4500] text-white rounded-xl flex items-center justify-center font-black text-lg shadow-sm border-2 border-slate-900">
-              {getInitial(userData?.name || currentUser?.name)}
-            </div>
-          </div>
-        </div>
-      </nav>
+      {/* Dynamic Initial Avatar in Navbar */}
+      <div className="w-10 h-10 bg-[#ff4500] text-white rounded-xl flex items-center justify-center font-black text-lg shadow-sm border-2 border-slate-900">
+        {getInitial(userData?.name || currentUser?.name)}
+      </div>
+    </div>
+  </div>
 
+  {/* --- MOBILE VIEW (Hidden on Desktop) --- */}
+  <div className="flex lg:hidden items-center gap-4">
+    <button onClick={handleSignOut} className="text-slate-400 hover:text-red-500 transition-colors">
+      <LogOut size={20} />
+    </button>
+    <div className="w-8 h-8 bg-[#ff4500] text-white rounded-xl flex items-center justify-center font-black text-sm shadow-sm border-2 border-slate-900">
+      {getInitial(userData?.name || currentUser?.name)}
+    </div>
+    <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="text-slate-900 p-1 ml-2">
+      {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+    </button>
+  </div>
+
+  {/* --- MOBILE DROPDOWN MENU --- */}
+  <div className={`absolute top-16 left-0 w-full bg-white border-b border-slate-100 shadow-xl flex flex-col p-6 gap-6 z-50 lg:hidden transition-all duration-300 ${isMobileMenuOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4 pointer-events-none'}`}>
+    <Link to="/" onClick={() => setIsMobileMenuOpen(false)} className="font-dashboard-caps text-slate-900 text-lg hover:text-[#ff4500]">Home</Link>
+    <Link to="/action-hub" onClick={() => setIsMobileMenuOpen(false)} className="font-dashboard-caps text-slate-900 text-lg hover:text-[#ff4500]">ActionHub</Link>
+    <Link to="/sos" onClick={() => setIsMobileMenuOpen(false)} className="font-dashboard-caps text-slate-900 text-lg hover:text-[#ff4500]">Community SOS</Link>
+    <Link to="/perks" onClick={() => setIsMobileMenuOpen(false)} className="font-dashboard-caps text-slate-900 text-lg hover:text-[#ff4500]">Perks</Link>
+    <Link to="/about" onClick={() => setIsMobileMenuOpen(false)} className="font-dashboard-caps text-slate-900 text-lg hover:text-[#ff4500]">About Us</Link>
+  </div>
+</nav>
       {/* --- MAIN CONTENT AREA (Full Width Now) --- */}
       <main className="flex-1 overflow-y-auto p-8 lg:p-12 relative">
         <div className="max-w-5xl mx-auto pb-20">
