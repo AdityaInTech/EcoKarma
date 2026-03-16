@@ -7,7 +7,7 @@ import api from '../api/axios';
 
 const Home = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(true);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false); // <-- Add this!
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [posts, setPosts] = useState([]);
   const [leaderboard, setLeaderboard] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -124,16 +124,18 @@ const Home = () => {
       </nav>
 
       <div className="flex flex-1 overflow-hidden relative">
-        <aside className={`bg-slate-50/50 border-r border-slate-100 transition-all duration-300 relative h-full shrink-0 ${isSidebarOpen ? 'w-72' : 'w-0'}`}>
+        <aside className={`bg-slate-50/50 border-r border-slate-100 transition-all duration-300 relative h-full shrink-0 flex flex-col ${isSidebarOpen ? 'w-72' : 'w-0'}`}>
           <button onClick={() => setSidebarOpen(!isSidebarOpen)} className="absolute top-8 bg-white border-2 border-slate-100 rounded-full p-2 shadow-md hover:text-[#ff4500] hover:border-[#ff4500] z-50 transition-all active:scale-90" style={{ right: '-18px' }}>
             {isSidebarOpen ? <ChevronLeft size={20} strokeWidth={3} /> : <ChevronRight size={20} strokeWidth={3} />}
           </button>
-          <div className={`p-8 whitespace-nowrap overflow-hidden transition-opacity duration-300 h-full ${!isSidebarOpen && 'opacity-0'}`}>
-            <div className="flex items-center gap-3 mb-10">
+          
+          <div className={`p-8 whitespace-nowrap transition-opacity duration-300 flex-1 flex flex-col overflow-hidden ${!isSidebarOpen && 'opacity-0'}`}>
+            <div className="flex items-center gap-3 mb-10 shrink-0">
               <TrendingUp size={20} className="text-[#ff4500]" />
               <h3 className="font-dashboard-caps">Karma Board</h3>
             </div>
-            <div className="space-y-7">
+            
+            <div className="space-y-7 overflow-y-auto flex-1 pr-4 pb-20 scrollbar-hide">
               {leaderboard.length === 0 ? (
                 <p className="text-xs text-slate-400 font-bold">Loading leaders...</p>
               ) : (
