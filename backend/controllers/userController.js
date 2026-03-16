@@ -37,7 +37,7 @@ exports.getLeaderboard = async (req, res) => {
     try {
         const topUsers = await User.find()
             .sort({ completedCleanups: -1 }) 
-            .limit(5)
+            .limit(50)
             // ✅ ADDED 'level' to the select list so the frontend can see it!
             .select('name completedCleanups points level'); 
             
