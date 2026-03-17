@@ -81,13 +81,21 @@ const CommunitySOS = () => {
     formDataToSend.append('bountyPoints', 100);
     formDataToSend.append('evidenceImage', formData.evidenceImage); 
     
-    try {
-      const response = await fetch('https://ecokarma.onrender.com/api/missions/create', {
-        method: 'POST',
-        body: formDataToSend,
-      });
+//    try {
+//      const response = await fetch('https://ecokarma.onrender.com/api/missions/create', {
+//        method: 'POST',
+//        body: formDataToSend,
+//      });
 
-      if (!response.ok) {
+//      if (!response.ok) {
+//        throw new Error('Backend rejected the upload.');
+//      }
+
+    try {
+      // Using your custom axios 'api' instance instead of standard fetch!
+      const response = await api.post('/missions/create', formDataToSend);
+
+      if (response.status !== 201 && response.status !== 200) {
         throw new Error('Backend rejected the upload.');
       }
       
