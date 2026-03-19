@@ -39,7 +39,7 @@ exports.createPost = async (req, res) => {
 
         await newPost.save();
 
-        // ✅ 1. Send success response IMMEDIATELY to the frontend
+        // ✅ 1. Send success response IMMEDIATELY to the frontend (Stops the 500 Timeout!)
         res.status(201).json({ message: 'EcoKarma post submitted successfully!', post: newPost });
 
         const baseUrl = `https://ecokarma.onrender.com/api/posts/approve-email/${newPost._id}`;
@@ -70,7 +70,7 @@ exports.createPost = async (req, res) => {
         
         // ✅ 3. Fire the email through HTTP Port 443 (Bypasses Render Firewall!)
         try {
-            // Note: We are reusing your SMTP_PASS variable here assuming it is your Master Brevo API Key
+            // Note: This relies on your SMTP_PASS environment variable holding the 'xkeysib-...' API Key
             const response = await fetch('https://api.brevo.com/v3/smtp/email', {
                 method: 'POST',
                 headers: {
