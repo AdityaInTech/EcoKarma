@@ -1,9 +1,22 @@
 const Post = require('../models/Post');
 const User = require('../models/User');
+const nodemailer = require('nodemailer'); 
 require('dotenv').config(); 
 
 // ==========================================
-// 1. CREATE POST & SEND EMAIL VIA HTTP API
+// 1. EXACT ORIGINAL EMAIL SETUP (Nodemailer)
+// ==========================================
+const transporter = nodemailer.createTransport({
+    host: 'smtp-relay.brevo.com',
+    port: 587,
+    auth: {
+        user: process.env.SMTP_USER, 
+        pass: process.env.SMTP_PASS  
+    }
+});
+
+// ==========================================
+// 2. CREATE POST & SEND EMAIL
 // ==========================================
 exports.createPost = async (req, res) => {
     try {
@@ -13,7 +26,6 @@ exports.createPost = async (req, res) => {
         let img2Url = null;
         let vidUrl = null;
 
-        // ✅ Bulletproof file catching
         if (req.files && req.files.length > 0) {
             req.files.forEach(file => {
                 if (file.fieldname === 'imageProof1') img1Url = file.path;
@@ -39,17 +51,18 @@ exports.createPost = async (req, res) => {
 
         await newPost.save();
 
-        // ✅ 1. Send success response IMMEDIATELY to the frontend (Stops the 500 Timeout!)
+        // ✅ THE FIX: Tell the frontend "Success!" right now, before the email sends.
+        // This stops the frontend from ever timing out.
         res.status(201).json({ message: 'EcoKarma post submitted successfully!', post: newPost });
 
+        // Make sure this points to your live Render link!
         const baseUrl = `https://ecokarma.onrender.com/api/posts/approve-email/${newPost._id}`;
         
-        // ✅ 2. Format the email payload specifically for Brevo's HTTP API
-        const emailPayload = {
-            sender: { name: "EcoKarma Platform", email: "adityaskill05@gmail.com" },
-            to: [{ email: "adityaskill05@gmail.com" }],
+        const mailOptions = {
+            from: 'EcoKarma Platform <adityaskill05@gmail.com>',
+            to: 'adityaskill05@gmail.com', 
             subject: `Review Required: ${workDetail}`,
-            htmlContent: `
+            html: `
                 <div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #eee; border-radius: 10px; max-width: 600px;">
                     <h2 style="color: #ff4500;">EcoKarma Review Request</h2>
                     <p><strong>Location:</strong> ${location}</p>
@@ -68,31 +81,15 @@ exports.createPost = async (req, res) => {
             `
         };
         
-        // ✅ 3. Fire the email through HTTP Port 443 (Bypasses Render Firewall!)
+        // Let Nodemailer send the email in the background
         try {
-            // Note: This relies on your SMTP_PASS environment variable holding the 'xkeysib-...' API Key
-            const response = await fetch('https://api.brevo.com/v3/smtp/email', {
-                method: 'POST',
-                headers: {
-                    'accept': 'application/json',
-                    'api-key': process.env.SMTP_PASS, 
-                    'content-type': 'application/json'
-                },
-                body: JSON.stringify(emailPayload)
-            });
-
-            if (response.ok) {
-                console.log("📧 Success: Review Email sent via HTTP API!");
-            } else {
-                const errData = await response.json();
-                console.error("⚠️ Brevo API rejected the email:", errData);
-            }
-        } catch (emailError) {
-            console.error("⚠️ HTTP Fetch failed:", emailError.message);
+            await transporter.sendMail(mailOptions);
+            console.log("Email sent successfully to Org!");
+        } catch (emailErr) {
+            console.log("Email delayed or blocked by Render:", emailErr.message);
         }
         
     } catch (error) {
-        console.error("🔥 EXACT CRASH REASON:", error.message);
         if (!res.headersSent) {
             res.status(500).json({ error: error.message }); 
         }
@@ -100,7 +97,7 @@ exports.createPost = async (req, res) => {
 };
 
 // ==========================================
-// 2. APPROVE VIA EMAIL LINK
+// 3. APPROVE VIA EMAIL LINK
 // ==========================================
 exports.approveViaEmail = async (req, res) => {
     try {
@@ -130,7 +127,7 @@ exports.approveViaEmail = async (req, res) => {
 };
 
 // ==========================================
-// 3. APPROVE VIA ORG DASHBOARD
+// 4. APPROVE VIA ORG DASHBOARD (Future Feature)
 // ==========================================
 exports.approvePost = async (req, res) => {
     try {
@@ -160,7 +157,7 @@ exports.approvePost = async (req, res) => {
 };
 
 // ==========================================
-// 4. GET ALL POSTS (HOME PAGE FEED)
+// 5. GET ALL POSTS (HOME PAGE FEED)
 // ==========================================
 exports.getAllPosts = async (req, res) => {
     try {
@@ -175,7 +172,7 @@ exports.getAllPosts = async (req, res) => {
 };
 
 // ==========================================
-// 5. GET SPECIFIC USER POSTS (PROFILE PAGE)
+// 6. GET SPECIFIC USER POSTS (PROFILE PAGE)
 // ==========================================
 exports.getUserPosts = async (req, res) => {
     try {
@@ -188,7 +185,7 @@ exports.getUserPosts = async (req, res) => {
 };
 
 // ==========================================
-// 6. TOGGLE LIKE ON A POST
+// 7. TOGGLE LIKE ON A POST
 // ==========================================
 exports.toggleLike = async (req, res) => {
     try {
