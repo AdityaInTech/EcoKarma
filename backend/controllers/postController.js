@@ -1,8 +1,9 @@
 const Post = require('../models/Post');
 const User = require('../models/User');
+require('dotenv').config(); 
 
 // ==========================================
-// 1. CREATE POST & SEND EMAIL VIA HTTP API
+// 1. CREATE POST & SEND EMAIL VIA RESEND
 // ==========================================
 exports.createPost = async (req, res) => {
     try {
@@ -30,50 +31,48 @@ exports.createPost = async (req, res) => {
 
         await newPost.save();
 
-        // 1. Tell Frontend Success!
+        // ✅ Tell Frontend Success Immediately!
         res.status(201).json({ message: 'EcoKarma post submitted successfully!', post: newPost });
 
         const baseUrl = `https://ecokarma.onrender.com/api/posts/approve-email/${newPost._id}`;
         
-        // 2. HTTP Payload for Brevo
+        // ✅ Format for RESEND HTTP API
         const emailPayload = {
-            sender: { name: "EcoKarma Platform", email: "adityaskill05@gmail.com" },
-            to: [{ email: "adityaskill05@gmail.com" }],
+            from: "EcoKarma Platform <onboarding@resend.dev>", // MUST BE onboarding@resend.dev on free tier
+            to: ["adityaskill05@gmail.com"], // MUST be the email you signed up to Resend with
             subject: `Review Required: ${workDetail}`,
-            htmlContent: `
+            html: `
                 <div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #eee; border-radius: 10px; max-width: 600px;">
-                    <h2 style="color: #ff4500;">EcoKarma Review Request</h2>
+                    <h2 style="color: #10b981;">EcoKarma Review Request</h2>
                     <p><strong>Location:</strong> ${location}</p>
                     <p><strong>Description:</strong> ${workDescription}</p>
                     ${img1Url && img1Url !== "dummy_image_1.jpg" ? `<img src="${img1Url}" style="max-width: 100%; border-radius: 8px; margin-bottom: 15px;" />` : '<p><i>No image provided.</i></p>'}
                     <p style="font-weight: bold; margin-top: 20px;">Evaluate the evidence and select a reward tier below:</p>
                     <div style="display: flex; gap: 10px; margin-top: 15px;">
                         <a href="${baseUrl}?points=50" style="background: #f1f5f9; color: #334155; padding: 12px 20px; text-decoration: none; border-radius: 8px; font-weight: bold; border: 1px solid #cbd5e1;">Good (50 Pts)</a>
-                        <a href="${baseUrl}?points=100" style="background: #ff4500; color: white; padding: 12px 20px; text-decoration: none; border-radius: 8px; font-weight: bold;">Great (100 Pts)</a>
+                        <a href="${baseUrl}?points=100" style="background: #10b981; color: white; padding: 12px 20px; text-decoration: none; border-radius: 8px; font-weight: bold;">Great (100 Pts)</a>
                         <a href="${baseUrl}?points=200" style="background: #0f172a; color: white; padding: 12px 20px; text-decoration: none; border-radius: 8px; font-weight: bold;">Exceptional (200 Pts)</a>
                     </div>
                 </div>
             `
         };
         
-        // 3. Fire HTTP Request (Bypasses Render Firewall)
+        // ✅ Fire Resend Request (Bypasses Render Firewall)
         try {
-            const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+            const response = await fetch('https://api.resend.com/emails', {
                 method: 'POST',
                 headers: {
-                    'accept': 'application/json',
-                    // 👇👇👇 PASTE YOUR EXACT xkeysib-... KEY INSIDE THESE QUOTES:
-                    'api-key': 'PASTE_YOUR_API_KEY_HERE', 
-                    'content-type': 'application/json'
+                    'Authorization': `Bearer ${process.env.RESEND_API_KEY}`, 
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(emailPayload)
             });
 
             if (response.ok) {
-                console.log("✅ EMAIL SENT VIA HTTP API!");
+                console.log("✅ EMAIL SENT VIA RESEND!");
             } else {
                 const errData = await response.json();
-                console.error("❌ Brevo Rejected:", errData);
+                console.error("❌ Resend Rejected:", errData);
             }
         } catch (emailError) {
             console.error("❌ Fetch failed:", emailError.message);
