@@ -143,5 +143,3 @@ Your app should now be running locally at http://localhost:5173!
 ## Author
 Built by **Aditya Parmale**
 
-
-Save that in VS Code, and the formatting should be absolutely perfect. Would you like to review how
